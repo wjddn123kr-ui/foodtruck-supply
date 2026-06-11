@@ -15,29 +15,23 @@
   body{margin:0; padding:0; background:var(--bg); color:var(--ink);
     font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;}
   .wrap{max-width:480px; margin:0 auto; min-height:100vh; padding:0 16px 48px}
-
   header{padding:22px 2px 10px}
   .tag{font-size:11px; font-weight:700; background:var(--ink); color:#fff; padding:3px 8px; border-radius:999px}
-  .sample{font-size:11px; font-weight:600; color:var(--muted); background:#fff; border:1px solid var(--line); padding:3px 8px; border-radius:999px; margin-left:6px}
+  .live{font-size:11px; font-weight:700; color:#0E8A4F; background:#E6F6EE; border:1px solid #B6E6CC; padding:3px 8px; border-radius:999px; margin-left:6px}
   h1{font-size:25px; font-weight:800; margin:12px 0 4px}
   .sub{font-size:13.5px; color:var(--muted); margin:0; line-height:1.5}
-
   .errbar{display:none; background:#FDECEC; border:1px solid #F3B5B5; color:#B42318; font-size:12.5px; font-weight:600; padding:10px 12px; border-radius:10px; margin:12px 0; white-space:pre-wrap}
-
   .search{display:flex; gap:8px; margin:16px 0 8px}
   .field{flex:1; display:flex; align-items:center; gap:8px; background:#fff; border:1.5px solid var(--line); border-radius:14px; padding:0 14px}
   .field:focus-within{border-color:var(--ink)}
   .field input{flex:1; border:0; outline:0; background:transparent; font-size:16px; font-weight:600; padding:14px 0; color:var(--ink); font-family:inherit}
   .field input::placeholder{color:#A6AEB8; font-weight:500}
   #searchBtn{border:0; background:var(--ink); color:#fff; font-size:15px; font-weight:700; padding:0 18px; border-radius:14px; cursor:pointer; font-family:inherit}
-
   .hint{font-size:12.5px; color:var(--muted); margin:0 2px 14px}
   .hint b{color:var(--ink); font-weight:700; cursor:pointer; border-bottom:1.5px solid var(--line)}
-
   .radius{display:flex; gap:7px; margin:0 2px 6px}
   .chip{flex:1; text-align:center; border:1.5px solid var(--line); background:#fff; color:var(--muted); font-size:13px; font-weight:700; padding:10px 0; border-radius:11px; cursor:pointer; font-family:inherit}
   .chip.on{background:var(--ink); color:#fff; border-color:var(--ink)}
-
   .meta-line{font-size:12.5px;color:#8A929C;margin:6px 2px 0;font-weight:600}
   .section{margin-top:18px}
   .sec-head{display:flex; align-items:center; gap:9px; margin:0 2px 12px}
@@ -47,7 +41,6 @@
   .ice .sec-bar{background:var(--ice)} .ice .sec-title{color:var(--ice-deep)}
   .gas .sec-bar{background:var(--gas)} .gas .sec-title{color:var(--gas-deep)}
   .fav .sec-bar{background:var(--gold)} .fav .sec-title{color:#9A6E04}
-
   .card{background:#fff; border:1px solid var(--line); border-radius:16px; padding:15px 15px 13px; margin-bottom:10px}
   .card.is-fav{border-color:var(--gold); box-shadow:0 0 0 1px var(--gold)}
   .card-top{display:flex; align-items:flex-start; gap:10px}
@@ -66,145 +59,93 @@
   .btn{flex:1; border:0; border-radius:11px; padding:11px 0; cursor:pointer; font-size:14px; font-weight:700; font-family:inherit; text-decoration:none; text-align:center; color:#fff}
   .ice .btn-call{background:var(--ice)} .gas .btn-call{background:var(--gas)}
   .fav .btn-call{background:#7A828C}
+  .btn-nocall{background:#C7CDD5}
   .btn-log{background:#EEF1F4; color:var(--ink)}
-
   .order,.addform{margin-top:11px; padding-top:13px; border-top:1px dashed var(--line); display:none}
   .order.open,.addform.open{display:block}
   .lab{display:block; font-size:11.5px; font-weight:700; color:var(--muted); margin:0 0 5px 2px}
   .order input,.addform input{width:100%; border:1.5px solid var(--line); border-radius:10px; padding:10px 11px; font-size:15px; font-weight:600; outline:0; font-family:inherit; margin-bottom:8px}
   .savebtn{width:100%; border:0; border-radius:11px; padding:12px 0; cursor:pointer; background:var(--ink); color:#fff; font-size:14.5px; font-weight:800; font-family:inherit}
-
   .addnew{width:100%; border:1.5px dashed #C7CDD5; background:transparent; color:#7A828C; font-size:13.5px; font-weight:700; padding:12px 0; border-radius:12px; cursor:pointer; font-family:inherit; margin-top:2px}
   .addform{border:1.5px solid var(--line); border-radius:14px; padding:14px; margin-top:8px}
-
   .beyond{font-size:12px; font-weight:600; color:var(--muted); text-align:center; padding:6px 0 8px}
   .empty{text-align:center; padding:40px 20px; color:var(--muted); font-size:14px; line-height:1.6}
   .empty .big{font-size:30px; margin-bottom:8px}
-  .goregions{display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:18px}
-  .goreg{border:1.5px solid var(--ink); background:#fff; color:var(--ink); font-size:14px; font-weight:700; padding:9px 18px; border-radius:11px; cursor:pointer; font-family:inherit}
   footer{margin-top:30px; text-align:center; font-size:11.5px; color:#A6AEB8; line-height:1.6}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <span class="tag">푸드트럭하우스</span><span class="sample">샘플 데이터</span>
+    <span class="tag">푸드트럭하우스</span><span class="live">● 실시간 검색</span>
     <h1>행사 공급처 찾기</h1>
-    <p class="sub">행사장 동네까지 좁혀 넣으면, 가까운 순으로 얼음·가스 업체를 모아줘요.</p>
+    <p class="sub">행사장 동네까지 좁혀 넣으면, 카카오맵에서 가까운 순으로 얼음·가스 업체를 찾아줘요.</p>
   </header>
-
   <div class="errbar" id="errbar"></div>
-
   <div class="search">
-    <div class="field">
-      <input id="region" type="text" placeholder="행사 지역 (예: 용인 기흥구)" autocomplete="off">
-    </div>
+    <div class="field"><input id="region" type="text" placeholder="행사 지역 (예: 용인 기흥구)" autocomplete="off"></div>
     <button id="searchBtn">찾기</button>
   </div>
-  <p class="hint">예시: <b data-r="용인 기흥구">용인 기흥구</b> · <b data-r="부산">부산</b> · <b data-r="서울">서울</b> · <b data-r="대구">대구</b></p>
-
+  <p class="hint">예시: <b data-r="용인 기흥구">용인 기흥구</b> · <b data-r="부산 해운대구">부산 해운대구</b> · <b data-r="서울 강남구">서울 강남구</b></p>
   <div class="radius" id="radius">
     <button class="chip" data-km="5">5km</button>
     <button class="chip on" data-km="10">10km</button>
     <button class="chip" data-km="15">15km</button>
     <button class="chip" data-km="999">전체</button>
   </div>
-
   <div id="results"></div>
-  <footer>샘플 화면 · 카카오 연동 시 전국 업체가 거리순으로 모입니다</footer>
+  <footer>카카오맵 실시간 검색 · 지도에 없는 업체는 "직접 추가"로 채울 수 있어요</footer>
 </div>
 
 <script>
-window.onerror=function(msg,src,line){
-  var b=document.getElementById('errbar');
-  if(b){ b.style.display='block'; b.textContent='⚠ 오류: '+msg+(line?(' (줄 '+line+')'):''); }
-  return false;
-};
-(function(){
+  /* ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
+  /*  여기 따옴표 안에 카카오 JavaScript 키를 붙여넣으세요  */
+  var KAKAO_JS_KEY = "2b8d861c9e62ef2a9ec2781114130ce9";
+  /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ */
+</script>
+<script>
+function showErr(t){ var b=document.getElementById('errbar'); if(b){ b.style.display='block'; b.textContent='⚠ '+t; } }
+window.onerror=function(msg,src,line){ showErr('오류: '+msg+(line?(' (줄 '+line+')'):'')); return false; };
+
+(function loadSDK(){
+  if(!KAKAO_JS_KEY || KAKAO_JS_KEY.indexOf("붙여넣기")>=0){
+    showErr('카카오 JavaScript 키를 아직 안 넣었어요. 파일 맨 위 KAKAO_JS_KEY = "..." 안에 키를 붙여넣어 주세요.');
+    return;
+  }
+  var s=document.createElement('script');
+  s.src="//dapi.kakao.com/v2/maps/sdk.js?appkey="+KAKAO_JS_KEY+"&libraries=services&autoload=false";
+  s.onload=function(){ try{ kakao.maps.load(initApp); }catch(e){ showErr('SDK 로드 오류: '+e.message); } };
+  s.onerror=function(){ showErr('카카오 SDK를 불러오지 못했어요. 키 값과 도메인 등록을 확인해 주세요.'); };
+  document.head.appendChild(s);
+})();
+
+function initApp(){ try{
   "use strict";
-  try{
-
-  var DATA={
-    "용인":{center:"기흥구 기준",
-      ice:[
-        {name:"기흥에너지아이스",addr:"기흥구 구갈동",distKm:1.5,tel:"031-000-1001"},
-        {name:"기흥아이스",addr:"기흥구 신갈동",distKm:1.8,tel:"031-000-1002"},
-        {name:"보정얼음",addr:"기흥구 보정동",distKm:3.3,tel:"031-000-1003"},
-        {name:"용인칵테일얼음",addr:"수지구 풍덕천동",distKm:4.2,tel:"031-000-1004"},
-        {name:"동백제빙",addr:"기흥구 중동",distKm:5.5,tel:"031-000-1005"},
-        {name:"수지얼음도매",addr:"수지구 죽전동",distKm:6.7,tel:"031-000-1006"},
-        {name:"처인식용얼음",addr:"처인구 김량장동",distKm:9.1,tel:"031-000-1007"},
-        {name:"남사아이스",addr:"처인구 남사읍",distKm:13.4,tel:"031-000-1008"}
-      ],
-      gas:[
-        {name:"기흥LPG충전소",addr:"기흥구 구갈동",distKm:1.5,tel:"031-000-2001"},
-        {name:"신갈프로판가스",addr:"기흥구 신갈동",distKm:2.0,tel:"031-000-2002"},
-        {name:"동백가스",addr:"기흥구 동백동",distKm:4.6,tel:"031-000-2003"},
-        {name:"수지프로판가스",addr:"수지구 상현동",distKm:5.8,tel:"031-000-2004"},
-        {name:"죽전가스충전",addr:"수지구 죽전동",distKm:6.9,tel:"031-000-2005"},
-        {name:"용인LPG",addr:"처인구 역북동",distKm:8.9,tel:"031-000-2006"},
-        {name:"양지프로판",addr:"처인구 양지면",distKm:14.2,tel:"031-000-2007"}
-      ]},
-    "부산":{center:"수영구 기준",
-      ice:[
-        {name:"해운대얼음",addr:"해운대구 우동",distKm:1.4,tel:"051-000-0001"},
-        {name:"부산칵테일아이스",addr:"수영구 광안동",distKm:3.7,tel:"051-000-0002"},
-        {name:"센텀제빙",addr:"해운대구 재송동",distKm:5.2,tel:"051-000-0003"},
-        {name:"남구식용얼음",addr:"남구 대연동",distKm:7.8,tel:"051-000-0004"}
-      ],
-      gas:[
-        {name:"광안LPG",addr:"수영구 민락동",distKm:2.2,tel:"051-000-0011"},
-        {name:"동래프로판",addr:"동래구 명륜동",distKm:5.1,tel:"051-000-0012"},
-        {name:"센텀가스충전",addr:"해운대구 재송동",distKm:6.0,tel:"051-000-0013"}
-      ]},
-    "서울":{center:"강남구 기준",
-      ice:[
-        {name:"강남제빙",addr:"강남구 역삼동",distKm:0.9,tel:"02-000-0001"},
-        {name:"성수아이스",addr:"성동구 성수동",distKm:4.5,tel:"02-000-0002"},
-        {name:"한강칵테일얼음",addr:"마포구 합정동",distKm:8.3,tel:"02-000-0003"}
-      ],
-      gas:[
-        {name:"강남LPG충전",addr:"강남구 자곡동",distKm:3.1,tel:"02-000-0011"},
-        {name:"마포프로판가스",addr:"마포구 상암동",distKm:9.7,tel:"02-000-0012"}
-      ]},
-    "대구":{center:"수성구 기준",
-      ice:[
-        {name:"수성아이스",addr:"수성구 범어동",distKm:1.7,tel:"053-000-0001"},
-        {name:"달서칵테일얼음",addr:"달서구 성당동",distKm:6.4,tel:"053-000-0002"},
-        {name:"북구제빙",addr:"북구 산격동",distKm:8.9,tel:"053-000-0003"}
-      ],
-      gas:[
-        {name:"수성LPG",addr:"수성구 만촌동",distKm:2.3,tel:"053-000-0011"},
-        {name:"성서프로판가스",addr:"달서구 호산동",distKm:11.2,tel:"053-000-0012"}
-      ]}
-  };
-
-  var ALIAS={
-    "용인":["용인","기흥","신갈","구갈","보정","동백","수지","풍덕천","죽전","상현","처인","김량장","남사","역북","양지","중동"],
-    "부산":["부산","해운대","우동","수영","광안","민락","센텀","재송","동래","명륜","대연"],
-    "서울":["서울","강남","역삼","자곡","성수","성동","마포","합정","상암"],
-    "대구":["대구","수성","범어","만촌","달서","성당","호산","산격"]
-  };
+  var Status=kakao.maps.services.Status;
+  var SortBy=kakao.maps.services.SortBy;
 
   var favs={}, orders={}, manual={};
+  var current="", radius=10, currentSet=null;
+  var results=document.getElementById("results");
+
+  function esc(s){ return String(s==null?"":s).replace(/[<>&]/g,function(c){return c==='<'?'&lt;':c==='>'?'&gt;':'&amp;';}); }
   function getManual(r,t){ if(!manual[r]) manual[r]={ice:[],gas:[]}; return manual[r][t]; }
   function idOf(r,t,n){ return r+"|"+t+"|"+n; }
   function won(n){ return Number(n).toLocaleString("ko-KR"); }
-  function km(d){ return (d<10? d.toFixed(1): d.toFixed(0))+"km"; }
-  var current="용인", radius=10;
-  var results=document.getElementById("results");
+  function km(d){ if(!d && d!==0) return "—"; return (d<10? d.toFixed(1): d.toFixed(0))+"km"; }
 
   function card(s,region,type){
     var id=idOf(region,type,s.name), isFav=!!favs[id], o=orders[id];
     var distHtml = s.manual ? '<span class="dist manual">직접 추가</span>' : '<span class="dist">'+km(s.distKm)+'</span>';
-    var last = o ? '<div class="lastorder">🧾 최근 주문 <b>'+o.date+'</b> · '+(o.qty||"-")+(o.memo?(" · "+o.memo):"")+(o.price?(" · "+won(o.price)+"원"):"")+'</div>' : '';
+    var last = o ? '<div class="lastorder">🧾 최근 주문 <b>'+o.date+'</b> · '+esc(o.qty||"-")+(o.memo?(" · "+esc(o.memo)):"")+(o.price?(" · "+won(o.price)+"원"):"")+'</div>' : '';
+    var callBtn = s.tel ? '<a class="btn btn-call" href="tel:'+esc(s.tel)+'">📞 '+esc(s.tel)+'</a>' : '<span class="btn btn-nocall">번호 없음</span>';
     return ''
-      +'<div class="card '+(isFav?"is-fav":"")+'" data-id="'+id+'">'
-      +'<div class="card-top"><div><div class="name">'+s.name+'</div>'
-      +'<div class="meta">'+distHtml+'<span class="addr">'+(s.addr||"")+'</span></div></div>'
+      +'<div class="card '+(isFav?"is-fav":"")+'" data-id="'+esc(id)+'">'
+      +'<div class="card-top"><div><div class="name">'+esc(s.name)+'</div>'
+      +'<div class="meta">'+distHtml+'<span class="addr">'+esc(s.addr||"")+'</span></div></div>'
       +'<button class="star '+(isFav?"on":"")+'" data-act="fav">'+(isFav?"★":"☆")+'</button></div>'
       +last
-      +'<div class="actions"><a class="btn btn-call" href="tel:'+(s.tel||"")+'">📞 전화</a>'
+      +'<div class="actions">'+callBtn
       +'<button class="btn btn-log" data-act="toggle">📝 주문 기록</button></div>'
       +'<div class="order">'
       +'<span class="lab">수량</span><input data-f="qty" placeholder="예: 칵테일얼음 10봉">'
@@ -216,7 +157,7 @@ window.onerror=function(msg,src,line){
 
   function addBox(region,type){
     var label = type==="ice" ? "얼음집" : "가스 업체";
-    return '<div class="addbox" data-region="'+region+'" data-type="'+type+'">'
+    return '<div class="addbox" data-region="'+esc(region)+'" data-type="'+type+'">'
       +'<button class="addnew" data-act="addopen">➕ 지도에 없는 '+label+' 직접 추가</button>'
       +'<div class="addform">'
       +'<span class="lab">업체명</span><input data-af="name" placeholder="예: 동네 '+label+'">'
@@ -239,45 +180,95 @@ window.onerror=function(msg,src,line){
   }
 
   function render(){
-    var set=DATA[current];
-    if(!set){
-      results.innerHTML='<div class="empty"><div class="big">🔍</div>'
-        +'<div style="font-weight:700;color:#3A414B;margin-bottom:6px">"'+current+'"은 이 데모에 없는 지역이에요</div>'
-        +'지금은 샘플 4개 지역만 들어있어요.<br>실서비스(카카오 연동)에선 전국 어디든 검색됩니다.'
-        +'<div class="goregions">'
-        +'<button class="goreg" data-act="goregion" data-region="용인">용인</button>'
-        +'<button class="goreg" data-act="goregion" data-region="부산">부산</button>'
-        +'<button class="goreg" data-act="goregion" data-region="서울">서울</button>'
-        +'<button class="goreg" data-act="goregion" data-region="대구">대구</button>'
-        +'</div></div>';
-      return;
-    }
+    var set=currentSet;
+    if(!set){ results.innerHTML='<div class="empty"><div class="big">🔍</div>결과가 없어요. 시/구/동을 더 정확히 넣어보세요.</div>'; return; }
     var html="";
     var allIce=set.ice.concat(getManual(current,"ice"));
     var allGas=set.gas.concat(getManual(current,"gas"));
     var fIce=allIce.filter(function(s){return favs[idOf(current,"ice",s.name)];});
     var fGas=allGas.filter(function(s){return favs[idOf(current,"gas",s.name)];});
     if(fIce.length+fGas.length){
-      html+='<div class="section fav"><div class="sec-head"><span class="sec-bar"></span><span class="sec-title">⭐ '+current+' 자주 쓰는 곳</span><span class="sec-count">'+(fIce.length+fGas.length)+'</span></div>';
+      html+='<div class="section fav"><div class="sec-head"><span class="sec-bar"></span><span class="sec-title">⭐ 자주 쓰는 곳</span><span class="sec-count">'+(fIce.length+fGas.length)+'</span></div>';
       fIce.forEach(function(s){ html+=card(s,current,"ice"); });
       fGas.forEach(function(s){ html+=card(s,current,"gas"); });
       html+='</div>';
     }
-    html+='<div class="meta-line">📍 '+set.center+' · 반경 '+(radius===999?"전체":radius+"km")+'</div>';
+    html+='<div class="meta-line">📍 '+esc(set.center)+' 기준 · 반경 '+(radius===999?"전체":radius+"km")+'</div>';
     html+=block("🧊 식용·칵테일 얼음","ice",set.ice,current,"ice");
     html+=block("🔥 LPG 가스","gas",set.gas,current,"gas");
     results.innerHTML=html;
   }
 
+  function showLoading(){ results.innerHTML='<div class="empty"><div class="big">⏳</div>'+esc(current)+' 주변 검색 중…</div>'; }
+
+  function kwSearch(keyword, loc){
+    return new Promise(function(resolve){
+      var places=new kakao.maps.services.Places();
+      places.keywordSearch(keyword, function(data, status){
+        resolve(status===Status.OK ? data : []);
+      }, { location: loc, radius: 20000, sort: SortBy.DISTANCE });
+    });
+  }
+
+  function geocode(query){
+    return new Promise(function(resolve){
+      var g=new kakao.maps.services.Geocoder();
+      g.addressSearch(query, function(result, status){
+        if(status===Status.OK && result && result.length){
+          resolve({lat:parseFloat(result[0].y), lng:parseFloat(result[0].x), name:result[0].address_name});
+        } else resolve(null);
+      });
+    });
+  }
+
+  function regionCenter(query){
+    return geocode(query).then(function(c){
+      if(c) return c;
+      return new Promise(function(resolve){
+        var p=new kakao.maps.services.Places();
+        p.keywordSearch(query, function(data, status){
+          if(status===Status.OK && data && data.length){
+            resolve({lat:parseFloat(data[0].y), lng:parseFloat(data[0].x), name:data[0].place_name});
+          } else resolve(null);
+        });
+      });
+    });
+  }
+
+  function dedupe(arrays){
+    var seen={}, out=[];
+    arrays.forEach(function(list){
+      list.forEach(function(p){
+        if(seen[p.id]) return; seen[p.id]=1;
+        out.push({
+          name:p.place_name,
+          addr:p.road_address_name||p.address_name||"",
+          tel:p.phone||"",
+          distKm: p.distance ? (parseInt(p.distance,10)/1000) : 0
+        });
+      });
+    });
+    out.sort(function(a,b){return a.distKm-b.distKm;});
+    return out.slice(0,25);
+  }
+
   function doSearch(r){
-    var q=(r||"").trim().replace(/\s/g,"");
-    var key=null;
-    for(var city in ALIAS){
-      var hit=ALIAS[city].some(function(a){return q.indexOf(a)>=0;});
-      if(hit){ key=city; break; }
-    }
-    current = key || q;
-    render();
+    var q=(r||"").trim();
+    if(!q) return;
+    current=q; currentSet=null; showLoading();
+    regionCenter(q).then(function(center){
+      if(!center){ currentSet=null; render(); return; }
+      var loc=new kakao.maps.LatLng(center.lat, center.lng);
+      var iceKw=["제빙","얼음","식용얼음"];
+      var gasKw=["LPG충전소","프로판가스","가스충전"];
+      return Promise.all([
+        Promise.all(iceKw.map(function(k){return kwSearch(k,loc);})),
+        Promise.all(gasKw.map(function(k){return kwSearch(k,loc);}))
+      ]).then(function(res){
+        currentSet={ center:(center.name||q), ice:dedupe(res[0]), gas:dedupe(res[1]) };
+        render();
+      });
+    }).catch(function(e){ showErr('검색 오류: '+(e&&e.message?e.message:e)); });
   }
 
   results.addEventListener("click",function(e){
@@ -308,19 +299,15 @@ window.onerror=function(msg,src,line){
       if(!name){ box.querySelector('[data-af="name"]').focus(); return; }
       getManual(region,type).push({name:name,addr:addr,tel:tel,manual:true});
       render();
-    } else if(act==="goregion"){
-      doSearch(actEl.dataset.region);
     }
   });
 
   document.getElementById("searchBtn").addEventListener("click",function(){ doSearch(document.getElementById("region").value); });
   document.getElementById("region").addEventListener("keydown",function(e){ if(e.key==="Enter") doSearch(e.target.value); });
-
   var hintEls=document.querySelectorAll(".hint b");
   for(var i=0;i<hintEls.length;i++){
     (function(b){ b.addEventListener("click",function(){ document.getElementById("region").value=b.dataset.r; doSearch(b.dataset.r); }); })(hintEls[i]);
   }
-
   document.getElementById("radius").addEventListener("click",function(e){
     var chip=e.target.closest(".chip"); if(!chip) return;
     var chips=document.querySelectorAll(".chip");
@@ -328,13 +315,10 @@ window.onerror=function(msg,src,line){
     chip.classList.add("on"); radius=Number(chip.dataset.km); render();
   });
 
-  render();
+  document.getElementById("region").value="용인 기흥구";
+  doSearch("용인 기흥구");
 
-  }catch(err){
-    var b=document.getElementById('errbar');
-    if(b){ b.style.display='block'; b.textContent='⚠ 초기화 오류: '+err.message; }
-  }
-})();
+}catch(err){ showErr('초기화 오류: '+err.message); } }
 </script>
 </body>
 </html>
