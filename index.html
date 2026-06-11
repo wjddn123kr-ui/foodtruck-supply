@@ -35,6 +35,16 @@
   .chooser-t{font-size:14px; font-weight:800; margin-bottom:12px}
   .choice{display:block; width:100%; text-align:left; border:1.5px solid var(--line); background:#fff; color:var(--ink); font-size:14.5px; font-weight:600; padding:13px 14px; border-radius:11px; cursor:pointer; font-family:inherit; margin-bottom:8px}
   .choice:active{transform:scale(.99)}
+  .mapbtn{width:100%; border:1.5px solid var(--line); background:#fff; color:var(--ink); font-size:14px; font-weight:700; padding:11px 0; border-radius:12px; cursor:pointer; font-family:inherit; margin:0 0 12px}
+  #mapwrap{display:none; margin:0 0 14px}
+  #map{width:100%; height:300px; border-radius:14px; overflow:hidden; border:1px solid var(--line)}
+  .legend{display:flex; align-items:center; font-size:12px; font-weight:600; color:var(--muted); margin:0 2px 8px}
+  .legend .lg{width:11px; height:11px; border-radius:50%; display:inline-block; margin:0 5px 0 12px}
+  .legend .lg:first-child{margin-left:0}
+  .lg-ice{background:var(--ice)} .lg-gas{background:var(--gas)} .lg-c{background:#191D26}
+  .pin{width:15px; height:15px; border-radius:50%; border:2px solid #fff; box-shadow:0 1px 4px rgba(0,0,0,.35); cursor:pointer}
+  .pin-ice{background:var(--ice)} .pin-gas{background:var(--gas)}
+  .pin-center{width:16px; height:16px; background:#191D26; box-shadow:0 0 0 4px rgba(25,29,38,.2),0 1px 4px rgba(0,0,0,.35)}
   .radius{display:flex; gap:7px; margin:0 2px 6px}
   .chip{flex:1; text-align:center; border:1.5px solid var(--line); background:#fff; color:var(--muted); font-size:13px; font-weight:700; padding:10px 0; border-radius:11px; cursor:pointer; font-family:inherit}
   .chip.on{background:var(--ink); color:#fff; border-color:var(--ink)}
@@ -101,6 +111,8 @@
     <button class="chip" data-km="15">15km</button>
     <button class="chip" data-km="999">전체</button>
   </div>
+  <button id="mapBtn" class="mapbtn" style="display:none">🗺 지도로 보기</button>
+  <div id="mapwrap"><div class="legend"><span class="lg lg-c"></span>검색위치<span class="lg lg-ice"></span>얼음<span class="lg lg-gas"></span>가스</div><div id="map"></div></div>
   <div id="results"></div>
   <footer>카카오맵 실시간 검색 · 지도에 없는 업체는 "직접 추가"로 채울 수 있어요</footer>
 </div>
@@ -133,7 +145,7 @@ function initApp(){ try{
   var SortBy=kakao.maps.services.SortBy;
 
   var favs={}, orders={}, manual={};
-  var current="", radius=10, currentSet=null;
+  var current="", radius=10, currentSet=null, centerLL=null, mapObj=null, mapMarkers=[], mapOn=false;
   var results=document.getElementById("results");
 
   function esc(s){ return String(s==null?"":s).replace(/[<>&]/g,function(c){return c==='<'?'&lt;':c==='>'?'&gt;':'&amp;';}); }
@@ -189,7 +201,7 @@ function initApp(){ try{
 
   function render(){
     var set=currentSet;
-    if(!set){ results.innerHTML='<div class="empty"><div class="big">🔍</div>결과가 없어요. 시/구/동을 더 정확히 넣어보세요.</div>'; return; }
+    if(!set){ results.innerHTML='<div class="empty"><div class="big">🔍</div>결과가 없어요. 읍·면·동을 더 정확히 넣어보세요.</div>'; document.getElementById("mapBtn").style.display="none"; document.getElementById("mapwrap").style.display="none"; mapOn=false; return; }
     var html="";
     var allIce=set.ice.concat(getManual(current,"ice"));
     var allGas=set.gas.concat(getManual(current,"gas"));
@@ -205,6 +217,8 @@ function initApp(){ try{
     html+=block("🧊 식용·칵테일 얼음","ice",set.ice,current,"ice");
     html+=block("🔥 LPG 가스","gas",set.gas,current,"gas");
     results.innerHTML=html;
+    document.getElementById("mapBtn").style.display="block";
+    if(mapOn) buildMap();
   }
 
   function showLoading(){ results.innerHTML='<div class="empty"><div class="big">⏳</div>'+esc(current)+' 주변 검색 중…</div>'; }
@@ -245,9 +259,9 @@ function initApp(){ try{
 
   function isRelevant(p){
     var g=p.category_group_code||"";
-    if(g==="FD6"||g==="CE7") return false; // 음식점/카페 제외
+    if(g==="FD6"||g==="CE7"||g==="OL7") return false; // 음식점/카페/주유소·충전소 제외
     var cn=p.category_name||"";
-    if(/음식점|카페|술집|주점|식당|치킨|분식|디저트|베이커리|제과|노래연습|펜션|숙박|아이스크림|빙수/.test(cn)) return false;
+    if(/음식점|카페|술집|주점|식당|치킨|분식|디저트|베이커리|제과|노래연습|펜션|숙박|아이스크림|빙수|주유소|자동차/.test(cn)) return false;
     return true;
   }
   function catShort(cn){
@@ -278,8 +292,9 @@ function initApp(){ try{
   function runSearchAt(center){
     current=center.name; currentSet=null; showLoading();
     var loc=new kakao.maps.LatLng(center.lat, center.lng);
+    centerLL=loc;
     var iceKw=["얼음","제빙","식용얼음","얼음도매","제빙공장","칵테일얼음"];
-    var gasKw=["LPG충전소","프로판가스","가스충전소","LPG판매"];
+    var gasKw=["프로판가스","LPG판매","가스판매","가스배달"];
     Promise.all([
       Promise.all(iceKw.map(function(k){return kwSearch(k,loc);})),
       Promise.all(gasKw.map(function(k){return kwSearch(k,loc);}))
@@ -319,6 +334,43 @@ function initApp(){ try{
       showErr('위치를 가져오지 못했어요. 브라우저 위치 권한을 허용해 주세요.');
       results.innerHTML='<div class="empty"><div class="big">📍</div>위치 권한을 허용하면<br>현재 위치 주변을 찾아드려요.</div>';
     }, {enableHighAccuracy:true, timeout:10000, maximumAge:0});
+  }
+
+  function buildMap(){
+    try{
+      if(!currentSet || !centerLL) return;
+      var cont=document.getElementById("map");
+      if(!mapObj){ mapObj=new kakao.maps.Map(cont, {center:centerLL, level:6}); }
+      mapMarkers.forEach(function(m){ m.setMap(null); }); mapMarkers=[];
+      var bounds=new kakao.maps.LatLngBounds();
+      bounds.extend(centerLL);
+      var cEl=document.createElement('div'); cEl.className='pin pin-center';
+      var cOv=new kakao.maps.CustomOverlay({position:centerLL, content:cEl, yAnchor:0.5, xAnchor:0.5, zIndex:5});
+      cOv.setMap(mapObj); mapMarkers.push(cOv);
+      function pins(list, cls){
+        list.forEach(function(s){
+          if(!s.lat || !s.lng) return;
+          var pos=new kakao.maps.LatLng(s.lat, s.lng);
+          var el=document.createElement('div'); el.className='pin '+cls; el.title=s.name;
+          el.addEventListener('click', function(){
+            if(window.__iw){ window.__iw.close(); }
+            window.__iw=new kakao.maps.InfoWindow({position:pos, content:'<div style="padding:6px 9px;font-size:12px;font-weight:700;white-space:nowrap">'+esc(s.name)+' · '+km(s.distKm)+'</div>'});
+            window.__iw.open(mapObj);
+          });
+          var ov=new kakao.maps.CustomOverlay({position:pos, content:el, yAnchor:0.5, xAnchor:0.5});
+          ov.setMap(mapObj); mapMarkers.push(ov); bounds.extend(pos);
+        });
+      }
+      pins(currentSet.ice,'pin-ice'); pins(currentSet.gas,'pin-gas');
+      setTimeout(function(){ try{ mapObj.relayout(); if(mapMarkers.length>1) mapObj.setBounds(bounds); }catch(_){}}, 60);
+    }catch(e){ showErr('지도 오류: '+e.message); }
+  }
+
+  function toggleMap(){
+    mapOn=!mapOn;
+    document.getElementById("mapwrap").style.display = mapOn?"block":"none";
+    document.getElementById("mapBtn").textContent = mapOn?"📋 목록만 보기":"🗺 지도로 보기";
+    if(mapOn) buildMap();
   }
 
   results.addEventListener("click",function(e){
@@ -368,6 +420,7 @@ function initApp(){ try{
   });
 
   document.getElementById("hereBtn").addEventListener("click", searchHere);
+  document.getElementById("mapBtn").addEventListener("click", toggleMap);
   results.innerHTML='<div class="empty"><div class="big">📍</div>행사장 <b style="color:#3A414B;font-weight:800">읍·면·동</b>을 입력하면<br>그 주변 얼음·가스 업체를 찾아드려요.<br><span style="font-size:12px">예: 구갈동, 정자동, 서교동</span></div>';
 
 }catch(err){ showErr('초기화 오류: '+err.message); } }
