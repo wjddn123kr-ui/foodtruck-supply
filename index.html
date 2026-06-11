@@ -240,7 +240,7 @@ function initApp(){ try{
     var g=p.category_group_code||"";
     if(g==="FD6"||g==="CE7") return false; // 음식점/카페 제외
     var cn=p.category_name||"";
-    if(/음식점|카페|술집|주점|호프|포차|식당|노래연습|펜션|숙박|치킨|고깃|국밥|분식|베이커리|제과|디저트|바\b/.test(cn)) return false;
+    if(/음식점|카페|술집|주점|식당|치킨|분식|디저트|베이커리|제과|노래연습|펜션|숙박/.test(cn)) return false;
     return true;
   }
   function catShort(cn){
@@ -274,7 +274,7 @@ function initApp(){ try{
     regionCenter(q).then(function(center){
       if(!center){ currentSet=null; render(); return; }
       var loc=new kakao.maps.LatLng(center.lat, center.lng);
-      var iceKw=["제빙","식용얼음","얼음도매","칵테일얼음"];
+      var iceKw=["얼음","제빙","식용얼음","얼음도매","제빙공장","칵테일얼음"];
       var gasKw=["LPG충전소","프로판가스","가스충전소","LPG판매"];
       return Promise.all([
         Promise.all(iceKw.map(function(k){return kwSearch(k,loc);})),
