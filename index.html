@@ -268,21 +268,22 @@ function initApp(){ try{
 
   function isRelevant(p, type){
     var g=p.category_group_code||"";
-    var cn=p.category_name||"";
-    // 공통 제외: 음식점/카페
-    if(g==="FD6"||g==="CE7") return false;
-    if(/음식점|카페|술집|주점|식당|치킨|분식|디저트|베이커리|제과|노래연습|펜션|숙박/.test(cn)) return false;
+    var leaf=catShort(p.category_name||""); // 가장 구체적인 업종만 본다
+    if(g==="FD6"||g==="CE7") return false;  // 음식점/카페 (확실)
     if(type==="ice"){
       if(g==="MT1"||g==="CS2") return false; // 대형마트/편의점
-      if(/아이스크림|빙수|슈퍼마켓|슈퍼|마트|편의점|할인점|식료품|식품판매|정육|주유소/.test(cn)) return false;
+      if(/아이스크림|빙수|슈퍼|마트|편의점|할인점|식료품|정육|과자|음식|식당|주점/.test(leaf)) return false;
+      return true;
     }
     if(type==="gas"){
       if(g==="OL7") return false; // 차량 주유소/충전소
-      if(/주유소|자동차|냉난방|냉방|난방|에어컨|보일러|설비|시공|공조|인테리어|렌탈|렌털/.test(cn)) return false;
+      if(/주유소|자동차|냉난방|냉방|난방|에어컨|보일러|설비|시공|공조|인테리어|렌탈|렌털/.test(leaf)) return false;
+      return true;
     }
     if(type==="mart"){
-      if(g==="CS2") return false; // 편의점 제외 (식자재마트만)
-      if(/편의점/.test(cn)) return false;
+      if(g==="CS2") return false;
+      if(/편의점/.test(leaf)) return false;
+      return true;
     }
     return true;
   }
