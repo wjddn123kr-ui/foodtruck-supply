@@ -276,6 +276,7 @@ function initApp(){ try{
       return true;
     }
     if(type==="gas"){
+      if(/충전소/.test(p.place_name||"")) return false; // 상호에 '충전소' = 차량 주유소
       if(/주유소|도시가스|냉난방|냉방|난방|에어컨|보일러|설비|시공|공조|인테리어|렌탈|렌털|자동차|가스레인지|주방/.test(leaf)) return false;
       return true;
     }
@@ -316,7 +317,7 @@ function initApp(){ try{
     var loc=new kakao.maps.LatLng(center.lat, center.lng);
     centerLL=loc;
     var iceKw=["얼음","제빙","식용얼음","얼음도매","제빙공장","칵테일얼음"];
-    var gasKw=["가스","LPG","프로판가스","LPG판매","가스충전","가스배달"];
+    var gasKw=["가스","LPG","프로판가스","LPG판매","가스배달"];
     var martKw=["식자재마트","식자재","도매마트","식품도매"];
     Promise.all([
       Promise.all(iceKw.map(function(k){return kwSearch(k,loc);})),
