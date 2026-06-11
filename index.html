@@ -278,6 +278,7 @@ function initApp(){ try{
     if(g==="FD6"||g==="CE7") return false;  // 음식점/카페 (확실)
     if(type==="ice"){
       if(g==="MT1"||g==="CS2") return false; // 대형마트/편의점
+      if(/과자|아이스크림|무인|할인점|문구|완구/.test(p.place_name||"")) return false; // 무인 과자·아이스크림 할인점
       if(/아이스크림|빙수|슈퍼|마트|편의점|할인점|식료품|정육|과자|음식|식당|주점/.test(leaf)) return false;
       return true;
     }
