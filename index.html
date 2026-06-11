@@ -29,6 +29,12 @@
   #searchBtn{border:0; background:var(--ink); color:#fff; font-size:15px; font-weight:700; padding:0 18px; border-radius:14px; cursor:pointer; font-family:inherit}
   .hint{font-size:12.5px; color:var(--muted); margin:0 2px 14px}
   .hint b{color:var(--ink); font-weight:700; cursor:pointer; border-bottom:1.5px solid var(--line)}
+  .here{width:100%; border:1.5px solid var(--ice); background:var(--ice-tint); color:var(--ice-deep); font-size:14px; font-weight:700; padding:12px 0; border-radius:12px; cursor:pointer; font-family:inherit; margin:0 0 14px}
+  .here:active{transform:scale(.99)}
+  .chooser{background:#fff; border:1px solid var(--line); border-radius:16px; padding:16px; margin-top:18px}
+  .chooser-t{font-size:14px; font-weight:800; margin-bottom:12px}
+  .choice{display:block; width:100%; text-align:left; border:1.5px solid var(--line); background:#fff; color:var(--ink); font-size:14.5px; font-weight:600; padding:13px 14px; border-radius:11px; cursor:pointer; font-family:inherit; margin-bottom:8px}
+  .choice:active{transform:scale(.99)}
   .radius{display:flex; gap:7px; margin:0 2px 6px}
   .chip{flex:1; text-align:center; border:1.5px solid var(--line); background:#fff; color:var(--muted); font-size:13px; font-weight:700; padding:10px 0; border-radius:11px; cursor:pointer; font-family:inherit}
   .chip.on{background:var(--ink); color:#fff; border-color:var(--ink)}
@@ -80,14 +86,15 @@
   <header>
     <span class="tag">푸드트럭하우스</span><span class="live">● 실시간 검색</span>
     <h1>행사 공급처 찾기</h1>
-    <p class="sub">행사장 동네까지 좁혀 넣으면, 카카오맵에서 가까운 순으로 얼음·가스 업체를 찾아줘요.</p>
+    <p class="sub">행사장 <b>읍·면·동</b>을 입력하면, 카카오맵에서 가까운 순으로 얼음·가스 업체를 찾아줘요.</p>
   </header>
   <div class="errbar" id="errbar"></div>
   <div class="search">
-    <div class="field"><input id="region" type="text" placeholder="행사 지역 (예: 용인 기흥구)" autocomplete="off"></div>
+    <div class="field"><input id="region" type="text" placeholder="읍·면·동 입력 (예: 구갈동)" autocomplete="off"></div>
     <button id="searchBtn">찾기</button>
   </div>
-  <p class="hint">예시: <b data-r="용인 기흥구">용인 기흥구</b> · <b data-r="부산 해운대구">부산 해운대구</b> · <b data-r="서울 강남구">서울 강남구</b></p>
+  <button id="hereBtn" class="here">📍 현재 위치로 찾기</button>
+  <p class="hint">예시: <b data-r="구갈동">구갈동</b> · <b data-r="정자동">정자동</b> · <b data-r="서교동">서교동</b></p>
   <div class="radius" id="radius">
     <button class="chip" data-km="5">5km</button>
     <button class="chip on" data-km="10">10km</button>
@@ -211,27 +218,27 @@ function initApp(){ try{
     });
   }
 
-  function geocode(query){
+  function findRegions(query){
     return new Promise(function(resolve){
       var g=new kakao.maps.services.Geocoder();
       g.addressSearch(query, function(result, status){
         if(status===Status.OK && result && result.length){
-          resolve({lat:parseFloat(result[0].y), lng:parseFloat(result[0].x), name:result[0].address_name});
-        } else resolve(null);
-      });
-    });
-  }
-
-  function regionCenter(query){
-    return geocode(query).then(function(c){
-      if(c) return c;
-      return new Promise(function(resolve){
-        var p=new kakao.maps.services.Places();
-        p.keywordSearch(query, function(data, status){
-          if(status===Status.OK && data && data.length){
-            resolve({lat:parseFloat(data[0].y), lng:parseFloat(data[0].x), name:data[0].place_name});
-          } else resolve(null);
-        });
+          var seen={}, list=[];
+          result.forEach(function(r){
+            var nm=r.address_name;
+            if(seen[nm]) return; seen[nm]=1;
+            list.push({lat:parseFloat(r.y), lng:parseFloat(r.x), name:nm});
+          });
+          resolve(list.slice(0,6));
+        } else {
+          // 주소로 안 잡히면 장소 검색으로 대체 (단일 후보)
+          var p=new kakao.maps.services.Places();
+          p.keywordSearch(query, function(data, st){
+            if(st===Status.OK && data && data.length){
+              resolve([{lat:parseFloat(data[0].y), lng:parseFloat(data[0].x), name:data[0].place_name+" 주변"}]);
+            } else resolve([]);
+          });
+        }
       });
     });
   }
@@ -259,6 +266,7 @@ function initApp(){ try{
           addr:p.road_address_name||p.address_name||"",
           tel:p.phone||"",
           cat:catShort(p.category_name),
+          lat:parseFloat(p.y), lng:parseFloat(p.x),
           distKm: p.distance ? (parseInt(p.distance,10)/1000) : 0
         });
       });
@@ -267,23 +275,50 @@ function initApp(){ try{
     return out.slice(0,25);
   }
 
+  function runSearchAt(center){
+    current=center.name; currentSet=null; showLoading();
+    var loc=new kakao.maps.LatLng(center.lat, center.lng);
+    var iceKw=["얼음","제빙","식용얼음","얼음도매","제빙공장","칵테일얼음"];
+    var gasKw=["LPG충전소","프로판가스","가스충전소","LPG판매"];
+    Promise.all([
+      Promise.all(iceKw.map(function(k){return kwSearch(k,loc);})),
+      Promise.all(gasKw.map(function(k){return kwSearch(k,loc);}))
+    ]).then(function(res){
+      currentSet={ center:center.name, ice:dedupe(res[0]), gas:dedupe(res[1]) };
+      render();
+    }).catch(function(e){ showErr('검색 오류: '+(e&&e.message?e.message:e)); });
+  }
+
+  function renderChooser(cands){
+    var h='<div class="chooser"><div class="chooser-t">같은 이름이 여러 곳이에요. 어디인가요?</div>';
+    cands.forEach(function(c){
+      h+='<button class="choice" data-act="pickregion" data-lat="'+c.lat+'" data-lng="'+c.lng+'" data-name="'+esc(c.name)+'">📍 '+esc(c.name)+'</button>';
+    });
+    h+='</div>';
+    results.innerHTML=h;
+  }
+
   function doSearch(r){
     var q=(r||"").trim();
     if(!q) return;
     current=q; currentSet=null; showLoading();
-    regionCenter(q).then(function(center){
-      if(!center){ currentSet=null; render(); return; }
-      var loc=new kakao.maps.LatLng(center.lat, center.lng);
-      var iceKw=["얼음","제빙","식용얼음","얼음도매","제빙공장","칵테일얼음"];
-      var gasKw=["LPG충전소","프로판가스","가스충전소","LPG판매"];
-      return Promise.all([
-        Promise.all(iceKw.map(function(k){return kwSearch(k,loc);})),
-        Promise.all(gasKw.map(function(k){return kwSearch(k,loc);}))
-      ]).then(function(res){
-        currentSet={ center:(center.name||q), ice:dedupe(res[0]), gas:dedupe(res[1]) };
-        render();
-      });
+    findRegions(q).then(function(cands){
+      if(!cands.length){ results.innerHTML='<div class="empty"><div class="big">🔍</div>"'+esc(q)+'" 위치를 찾지 못했어요.<br>읍·면·동을 더 정확히 입력해보세요.</div>'; return; }
+      if(cands.length===1){ runSearchAt(cands[0]); }
+      else { renderChooser(cands); }
     }).catch(function(e){ showErr('검색 오류: '+(e&&e.message?e.message:e)); });
+  }
+
+  function searchHere(){
+    if(!navigator.geolocation){ showErr('이 브라우저는 위치 기능을 지원하지 않아요.'); return; }
+    current="현재 위치"; currentSet=null;
+    results.innerHTML='<div class="empty"><div class="big">📍</div>현재 위치 확인 중…</div>';
+    navigator.geolocation.getCurrentPosition(function(pos){
+      runSearchAt({lat:pos.coords.latitude, lng:pos.coords.longitude, name:"현재 위치"});
+    }, function(){
+      showErr('위치를 가져오지 못했어요. 브라우저 위치 권한을 허용해 주세요.');
+      results.innerHTML='<div class="empty"><div class="big">📍</div>위치 권한을 허용하면<br>현재 위치 주변을 찾아드려요.</div>';
+    }, {enableHighAccuracy:true, timeout:10000, maximumAge:0});
   }
 
   results.addEventListener("click",function(e){
@@ -314,6 +349,8 @@ function initApp(){ try{
       if(!name){ box.querySelector('[data-af="name"]').focus(); return; }
       getManual(region,type).push({name:name,addr:addr,tel:tel,manual:true});
       render();
+    } else if(act==="pickregion"){
+      runSearchAt({lat:parseFloat(actEl.dataset.lat), lng:parseFloat(actEl.dataset.lng), name:actEl.dataset.name});
     }
   });
 
@@ -330,8 +367,8 @@ function initApp(){ try{
     chip.classList.add("on"); radius=Number(chip.dataset.km); render();
   });
 
-  document.getElementById("region").value="용인 기흥구";
-  doSearch("용인 기흥구");
+  document.getElementById("hereBtn").addEventListener("click", searchHere);
+  results.innerHTML='<div class="empty"><div class="big">📍</div>행사장 <b style="color:#3A414B;font-weight:800">읍·면·동</b>을 입력하면<br>그 주변 얼음·가스 업체를 찾아드려요.<br><span style="font-size:12px">예: 구갈동, 정자동, 서교동</span></div>';
 
 }catch(err){ showErr('초기화 오류: '+err.message); } }
 </script>
