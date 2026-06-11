@@ -289,7 +289,8 @@ function initApp(){ try{
     }
     if(type==="mart"){
       if(g==="CS2") return false;
-      if(/편의점/.test(leaf)) return false;
+      var nm=p.place_name||"";
+      if(/편의점|안경|의류|옷가게|가구|화장품|약국|철물|꽃|미용|네일|휴대폰|핸드폰|문구|완구|보석|귀금속|침구|타이어|페인트|인테리어|부동산|학원|병원|의원|동물|세탁|렌탈|렌털/.test(leaf+nm)) return false;
       return true;
     }
     return true;
@@ -326,7 +327,7 @@ function initApp(){ try{
     centerLL=loc;
     var iceKw=["얼음","제빙","식용얼음","얼음도매","제빙공장","칵테일얼음"];
     var gasKw=["가스","LPG","프로판가스","LPG판매","가스배달"];
-    var martKw=["식자재마트","식자재","도매마트","식품도매"];
+    var martKw=["식자재마트","식자재","식품도매","농수산물"];
     Promise.all([
       Promise.all(iceKw.map(function(k){return kwSearch(k,loc);})),
       Promise.all(gasKw.map(function(k){return kwSearch(k,loc);})),
