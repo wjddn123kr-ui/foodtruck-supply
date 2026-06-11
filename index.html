@@ -64,6 +64,9 @@
   .card.is-fav{border-color:var(--gold); box-shadow:0 0 0 1px var(--gold)}
   .card-top{display:flex; align-items:flex-start; gap:10px}
   .name{font-size:16.5px; font-weight:800; line-height:1.25}
+  a.namelink{color:var(--ink); text-decoration:none; display:inline-block}
+  a.namelink:active{opacity:.6}
+  .ext{font-size:12px; color:var(--muted); font-weight:700; vertical-align:1px}
   .star{flex:none; margin-left:auto; width:34px; height:34px; border-radius:10px; border:1px solid var(--line); background:#fff; cursor:pointer; font-size:17px; line-height:1}
   .star.on{background:var(--gold-tint); border-color:var(--gold)}
   .meta{display:flex; align-items:center; gap:7px; margin-top:5px; flex-wrap:wrap}
@@ -164,9 +167,12 @@ function initApp(){ try{
     var distHtml = s.manual ? '<span class="dist manual">직접 추가</span>' : '<span class="dist">'+km(s.distKm)+'</span>';
     var last = o ? '<div class="lastorder">🧾 최근 주문 <b>'+o.date+'</b> · '+esc(o.qty||"-")+(o.memo?(" · "+esc(o.memo)):"")+(o.price?(" · "+won(o.price)+"원"):"")+'</div>' : '';
     var callBtn = s.tel ? '<a class="btn btn-call" href="tel:'+esc(s.tel)+'">📞 '+esc(s.tel)+'</a>' : '<span class="btn btn-nocall">번호 없음</span>';
+    var nameHtml = s.url
+      ? '<a class="name namelink" href="'+esc(s.url)+'" target="_blank" rel="noopener">'+esc(s.name)+' <span class="ext">↗</span></a>'
+      : '<div class="name">'+esc(s.name)+'</div>';
     return ''
       +'<div class="card '+(isFav?"is-fav":"")+'" data-id="'+esc(id)+'">'
-      +'<div class="card-top"><div><div class="name">'+esc(s.name)+'</div>'
+      +'<div class="card-top"><div>'+nameHtml
       +'<div class="meta">'+distHtml+(s.cat?'<span class="cat">'+esc(s.cat)+'</span>':'')+'<span class="addr">'+esc(s.addr||"")+'</span></div></div>'
       +'<button class="star '+(isFav?"on":"")+'" data-act="fav">'+(isFav?"★":"☆")+'</button></div>'
       +last
@@ -303,6 +309,7 @@ function initApp(){ try{
           addr:p.road_address_name||p.address_name||"",
           tel:p.phone||"",
           cat:catShort(p.category_name),
+          url:p.place_url||"",
           lat:parseFloat(p.y), lng:parseFloat(p.x),
           distKm: p.distance ? (parseInt(p.distance,10)/1000) : 0
         });
