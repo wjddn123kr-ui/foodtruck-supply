@@ -154,7 +154,7 @@ function initApp(){ try{
   var results=document.getElementById("results");
 
   function esc(s){ return String(s==null?"":s).replace(/[<>&]/g,function(c){return c==='<'?'&lt;':c==='>'?'&gt;':'&amp;';}); }
-  function getManual(r,t){ if(!manual[r]) manual[r]={ice:[],gas:[]}; return manual[r][t]; }
+  function getManual(r,t){ if(!manual[r]) manual[r]={}; if(!manual[r][t]) manual[r][t]=[]; return manual[r][t]; }
   function idOf(r,t,n){ return r+"|"+t+"|"+n; }
   function won(n){ return Number(n).toLocaleString("ko-KR"); }
   function km(d){ if(!d && d!==0) return "—"; return (d<10? d.toFixed(1): d.toFixed(0))+"km"; }
