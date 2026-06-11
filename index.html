@@ -42,8 +42,10 @@
   .legend .lg{width:11px; height:11px; border-radius:50%; display:inline-block; margin:0 5px 0 12px}
   .legend .lg:first-child{margin-left:0}
   .lg-ice{background:var(--ice)} .lg-gas{background:var(--gas)} .lg-c{background:#191D26}
+  .lg-mart{background:#1F9D55}
   .pin{width:15px; height:15px; border-radius:50%; border:2px solid #fff; box-shadow:0 1px 4px rgba(0,0,0,.35); cursor:pointer}
   .pin-ice{background:var(--ice)} .pin-gas{background:var(--gas)}
+  .pin-mart{background:#1F9D55}
   .pin-center{width:16px; height:16px; background:#191D26; box-shadow:0 0 0 4px rgba(25,29,38,.2),0 1px 4px rgba(0,0,0,.35)}
   .radius{display:flex; gap:7px; margin:0 2px 6px}
   .chip{flex:1; text-align:center; border:1.5px solid var(--line); background:#fff; color:var(--muted); font-size:13px; font-weight:700; padding:10px 0; border-radius:11px; cursor:pointer; font-family:inherit}
@@ -56,6 +58,7 @@
   .sec-count{font-size:12px; font-weight:700; color:var(--muted); margin-left:auto}
   .ice .sec-bar{background:var(--ice)} .ice .sec-title{color:var(--ice-deep)}
   .gas .sec-bar{background:var(--gas)} .gas .sec-title{color:var(--gas-deep)}
+  .mart .sec-bar{background:#1F9D55} .mart .sec-title{color:#147A40}
   .fav .sec-bar{background:var(--gold)} .fav .sec-title{color:#9A6E04}
   .card{background:#fff; border:1px solid var(--line); border-radius:16px; padding:15px 15px 13px; margin-bottom:10px}
   .card.is-fav{border-color:var(--gold); box-shadow:0 0 0 1px var(--gold)}
@@ -67,6 +70,7 @@
   .dist{font-size:12.5px; font-weight:800; padding:2px 8px; border-radius:8px}
   .ice .dist{background:var(--ice-tint); color:var(--ice-deep)}
   .gas .dist{background:var(--gas-tint); color:var(--gas-deep)}
+  .mart .dist{background:#E7F6EE; color:#147A40}
   .dist.manual{background:var(--gold-tint); color:#9A6E04}
   .cat{font-size:11.5px; font-weight:700; color:#5A6270; background:#F1F3F5; padding:2px 7px; border-radius:7px}
   .addr{font-size:13px; color:var(--muted)}
@@ -75,6 +79,7 @@
   .actions{display:flex; gap:8px; margin-top:12px}
   .btn{flex:1; border:0; border-radius:11px; padding:11px 0; cursor:pointer; font-size:14px; font-weight:700; font-family:inherit; text-decoration:none; text-align:center; color:#fff}
   .ice .btn-call{background:var(--ice)} .gas .btn-call{background:var(--gas)}
+  .mart .btn-call{background:#1F9D55}
   .fav .btn-call{background:#7A828C}
   .btn-nocall{background:#C7CDD5}
   .btn-log{background:#EEF1F4; color:var(--ink)}
@@ -112,7 +117,7 @@
     <button class="chip" data-km="999">전체</button>
   </div>
   <button id="mapBtn" class="mapbtn" style="display:none">🗺 지도로 보기</button>
-  <div id="mapwrap"><div class="legend"><span class="lg lg-c"></span>검색위치<span class="lg lg-ice"></span>얼음<span class="lg lg-gas"></span>가스</div><div id="map"></div></div>
+  <div id="mapwrap"><div class="legend"><span class="lg lg-c"></span>검색위치<span class="lg lg-ice"></span>얼음<span class="lg lg-gas"></span>가스<span class="lg lg-mart"></span>식자재</div><div id="map"></div></div>
   <div id="results"></div>
   <footer>카카오맵 실시간 검색 · 지도에 없는 업체는 "직접 추가"로 채울 수 있어요</footer>
 </div>
@@ -176,7 +181,7 @@ function initApp(){ try{
   }
 
   function addBox(region,type){
-    var label = type==="ice" ? "얼음집" : "가스 업체";
+    var label = type==="ice" ? "얼음집" : type==="gas" ? "가스 업체" : "식자재마트";
     return '<div class="addbox" data-region="'+esc(region)+'" data-type="'+type+'">'
       +'<button class="addnew" data-act="addopen">➕ 지도에 없는 '+label+' 직접 추가</button>'
       +'<div class="addform">'
@@ -205,17 +210,21 @@ function initApp(){ try{
     var html="";
     var allIce=set.ice.concat(getManual(current,"ice"));
     var allGas=set.gas.concat(getManual(current,"gas"));
+    var allMart=(set.mart||[]).concat(getManual(current,"mart"));
     var fIce=allIce.filter(function(s){return favs[idOf(current,"ice",s.name)];});
     var fGas=allGas.filter(function(s){return favs[idOf(current,"gas",s.name)];});
-    if(fIce.length+fGas.length){
-      html+='<div class="section fav"><div class="sec-head"><span class="sec-bar"></span><span class="sec-title">⭐ 자주 쓰는 곳</span><span class="sec-count">'+(fIce.length+fGas.length)+'</span></div>';
+    var fMart=allMart.filter(function(s){return favs[idOf(current,"mart",s.name)];});
+    if(fIce.length+fGas.length+fMart.length){
+      html+='<div class="section fav"><div class="sec-head"><span class="sec-bar"></span><span class="sec-title">⭐ 자주 쓰는 곳</span><span class="sec-count">'+(fIce.length+fGas.length+fMart.length)+'</span></div>';
       fIce.forEach(function(s){ html+=card(s,current,"ice"); });
       fGas.forEach(function(s){ html+=card(s,current,"gas"); });
+      fMart.forEach(function(s){ html+=card(s,current,"mart"); });
       html+='</div>';
     }
     html+='<div class="meta-line">📍 '+esc(set.center)+' 기준 · 반경 '+(radius===999?"전체":radius+"km")+'</div>';
     html+=block("🧊 식용·칵테일 얼음","ice",set.ice,current,"ice");
     html+=block("🔥 LPG 가스","gas",set.gas,current,"gas");
+    html+=block("🛒 식자재마트","mart",set.mart||[],current,"mart");
     results.innerHTML=html;
     document.getElementById("mapBtn").style.display="block";
     if(mapOn) buildMap();
@@ -257,11 +266,24 @@ function initApp(){ try{
     });
   }
 
-  function isRelevant(p){
+  function isRelevant(p, type){
     var g=p.category_group_code||"";
-    if(g==="FD6"||g==="CE7"||g==="OL7") return false; // 음식점/카페/주유소·충전소 제외
     var cn=p.category_name||"";
-    if(/음식점|카페|술집|주점|식당|치킨|분식|디저트|베이커리|제과|노래연습|펜션|숙박|아이스크림|빙수|주유소|자동차/.test(cn)) return false;
+    // 공통 제외: 음식점/카페
+    if(g==="FD6"||g==="CE7") return false;
+    if(/음식점|카페|술집|주점|식당|치킨|분식|디저트|베이커리|제과|노래연습|펜션|숙박/.test(cn)) return false;
+    if(type==="ice"){
+      if(g==="MT1"||g==="CS2") return false; // 대형마트/편의점
+      if(/아이스크림|빙수|슈퍼마켓|슈퍼|마트|편의점|할인점|식료품|식품판매|정육|주유소/.test(cn)) return false;
+    }
+    if(type==="gas"){
+      if(g==="OL7") return false; // 차량 주유소/충전소
+      if(/주유소|자동차|냉난방|냉방|난방|에어컨|보일러|설비|시공|공조|인테리어|렌탈|렌털/.test(cn)) return false;
+    }
+    if(type==="mart"){
+      if(g==="CS2") return false; // 편의점 제외 (식자재마트만)
+      if(/편의점/.test(cn)) return false;
+    }
     return true;
   }
   function catShort(cn){
@@ -269,12 +291,12 @@ function initApp(){ try{
     var parts=cn.split(">");
     return parts[parts.length-1].trim();
   }
-  function dedupe(arrays){
+  function dedupe(arrays, type){
     var seen={}, out=[];
     arrays.forEach(function(list){
       list.forEach(function(p){
         if(seen[p.id]) return; seen[p.id]=1;
-        if(!isRelevant(p)) return;
+        if(!isRelevant(p, type)) return;
         out.push({
           name:p.place_name,
           addr:p.road_address_name||p.address_name||"",
@@ -295,11 +317,13 @@ function initApp(){ try{
     centerLL=loc;
     var iceKw=["얼음","제빙","식용얼음","얼음도매","제빙공장","칵테일얼음"];
     var gasKw=["프로판가스","LPG판매","가스판매","가스배달"];
+    var martKw=["식자재마트","식자재","도매마트","식품도매"];
     Promise.all([
       Promise.all(iceKw.map(function(k){return kwSearch(k,loc);})),
-      Promise.all(gasKw.map(function(k){return kwSearch(k,loc);}))
+      Promise.all(gasKw.map(function(k){return kwSearch(k,loc);})),
+      Promise.all(martKw.map(function(k){return kwSearch(k,loc);}))
     ]).then(function(res){
-      currentSet={ center:center.name, ice:dedupe(res[0]), gas:dedupe(res[1]) };
+      currentSet={ center:center.name, ice:dedupe(res[0],"ice"), gas:dedupe(res[1],"gas"), mart:dedupe(res[2],"mart") };
       render();
     }).catch(function(e){ showErr('검색 오류: '+(e&&e.message?e.message:e)); });
   }
@@ -361,7 +385,7 @@ function initApp(){ try{
           ov.setMap(mapObj); mapMarkers.push(ov); bounds.extend(pos);
         });
       }
-      pins(currentSet.ice,'pin-ice'); pins(currentSet.gas,'pin-gas');
+      pins(currentSet.ice,'pin-ice'); pins(currentSet.gas,'pin-gas'); pins(currentSet.mart||[],'pin-mart');
       setTimeout(function(){ try{ mapObj.relayout(); if(mapMarkers.length>1) mapObj.setBounds(bounds); }catch(_){}}, 60);
     }catch(e){ showErr('지도 오류: '+e.message); }
   }
