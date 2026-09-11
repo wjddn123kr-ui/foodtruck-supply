@@ -457,6 +457,18 @@ function initApp(){ try{
   document.getElementById("mapBtn").addEventListener("click", toggleMap);
   results.innerHTML='<div class="empty"><div class="big">📍</div>행사장 <b style="color:#3A414B;font-weight:800">읍·면·동</b>을 입력하면<br>그 주변 얼음·가스 업체를 찾아드려요.<br><span style="font-size:12px">예: 구갈동, 정자동, 서교동</span></div>';
 
+  // ── 행사보드 연동: ?q=주소 로 열리면 자동 검색 ──
+  (function(){
+    try{
+      var q=new URLSearchParams(location.search).get('q');
+      if(q&&q.trim()){
+        q=q.trim();
+        document.getElementById('region').value=q;
+        doSearch(q);
+      }
+    }catch(e){}
+  })();
+
 }catch(err){ showErr('초기화 오류: '+err.message); } }
 </script>
 </body>
